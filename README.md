@@ -19,7 +19,9 @@ If you want to listen on a different port, just set the PORT variable:
   PORT=9999 caching-s3-proxy
 ```
 
-You can also set CAPACITY (in bytes) and CACHEDIR.
+You can also set CAPACITY (in bytes) and CACHEDIR.  If you set
+CAPACITY to 0 the cache will be disabled so every request to
+caching-s3-proxy will cause a request to S3.
 
 Alternatively, you can run under uwsgi. It's safe to use multiple workers
 processes (the shared file cache uses file locking to allow concurrency):

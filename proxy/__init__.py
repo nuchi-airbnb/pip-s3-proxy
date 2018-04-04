@@ -3,6 +3,7 @@ import botocore
 import hashlib
 import logging
 from proxy.cache import LRUCache
+from proxy.cache import NoOpCache
 import tempfile
 
 
@@ -10,7 +11,10 @@ class CachingS3Proxy(object):
     def __init__(self, capacity=(10*10**9), cache_dir=tempfile.gettempdir()):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
-        self.cache = LRUCache(capacity, cache_dir)
+        if capacity:
+            self.cache = LRUCache(capacity, cache_dir)
+        else:
+            self.cache = NoOpCache()
         self.s3 = boto3.resource('s3')
 
     def proxy_s3_bucket(self, environ, start_response):

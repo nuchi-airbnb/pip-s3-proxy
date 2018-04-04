@@ -77,6 +77,17 @@ class LRUCache(object):
         return key in self.cache
 
 
+class NoOpCache(object):
+    def __getitem__(self, key):
+        raise KeyError('not implemented')
+
+    def __setitem__(self, key, value):
+        pass
+
+    def contains(self, key):
+        return False
+
+
 # based on https://github.com/erikrose/shiva
 # and also https://github.com/dmfrey/FileLock
 @contextmanager
