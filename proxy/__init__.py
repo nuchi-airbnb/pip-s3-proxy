@@ -24,10 +24,10 @@ class CachingS3Proxy(object):
 
         path_info = path_info.lstrip('/')
         (bucket, key) = path_info.split('/', 1)
+        status = '200 OK'
+        response_headers = []
         try:
             s3_result = self.fetch_s3_object(bucket, key)
-            status = '200 OK'
-            response_headers = [('Content-type', 'text/plain')]
         except botocore.exceptions.ClientError as ce:
             s3_result = ce.response['Error']['Message']
             status = '404 NOT FOUND'
