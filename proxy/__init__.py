@@ -33,9 +33,20 @@ class CachingS3Proxy(object):
         try:
             s3_result = self.fetch_s3_object(bucket, key)
         except botocore.exceptions.ClientError as ce:
-            s3_result = ce.response['Error']['Message']
-            status = '404 NOT FOUND'
-            response_headers = [('Content-type', 'text/plain')]
+            # this is a compatibility hack for pip.  tools like s3pypi
+            # build index.html files that pip can use to find out what
+            # versions of a package are available.  pip expects the
+            # web server to serve an index page, though, so we need to
+            # make another request to get an index.html page if there
+            # is one.
+            if key.endswith('/'):
+                try:
+                    s3_result = self.fetch_s3_object(bucket, key + 'index.html')
+                    response_headers = [('Content-type', 'text/html')]
+                except botocore.exceptions.ClientError:
+                    s3_result = ce.response['Error']['Message']
+                    status = '404 NOT FOUND'
+                    response_headers = [('Content-type', 'text/plain')]
 
         start_response(status, response_headers)
         return [s3_result]
