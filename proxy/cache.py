@@ -15,7 +15,7 @@ class LRUCache(object):
     def __init__(self, capacity=None, cache_dir=None):
         if not capacity:
             # 1GB
-            capacity = (10*10**9)
+            capacity = (10 * 10**9)
         if not cache_dir:
             cache_dir = tempfile.gettempdir()
         logging.basicConfig(level=logging.INFO)
@@ -31,8 +31,7 @@ class LRUCache(object):
         self.index_file = os.path.join(self.cache_dir, 'index')
         with flock(self.lock_path):
             if os.path.exists(self.index_file):
-                (self.total_size, self.cache) = \
-                        pickle.load(open(self.index_file, 'r'))
+                (self.total_size, self.cache) = pickle.load(open(self.index_file, 'r'))
             else:
                 pickle.dump((self.total_size, self.cache),
                             open(self.index_file, 'w'))
@@ -40,8 +39,7 @@ class LRUCache(object):
     def __getitem__(self, key):
         abspath = os.path.join(self.cache_dir, key)
         with flock(self.lock_path):
-            (self.total_size, self.cache) = \
-                    pickle.load(open(self.index_file, 'r'))
+            (self.total_size, self.cache) = pickle.load(open(self.index_file, 'r'))
             self.cache.pop(key)
             size = os.path.getsize(abspath)
             with open(abspath, 'r') as cachefile:
@@ -49,15 +47,14 @@ class LRUCache(object):
                 # bump this to the top, since it was accessed most recently
                 self.cache[key] = size
                 pickle.dump((self.total_size, self.cache),
-                        open(self.index_file, 'w'))
+                            open(self.index_file, 'w'))
                 return value
 
     def __setitem__(self, key, value):
         abspath = os.path.join(self.cache_dir, key)
         with flock(self.lock_path):
             if os.path.exists(self.index_file):
-                (self.total_size, self.cache) = \
-                        pickle.load(open(self.index_file, 'r'))
+                (self.total_size, self.cache) = pickle.load(open(self.index_file, 'r'))
             # remove files until we're under the limit, if we hit capacity
             while self.total_size >= self.capacity:
                 self.logger.info('cache hit capacity %s' % self.capacity)
@@ -71,7 +68,7 @@ class LRUCache(object):
             self.cache[key] = size
             self.total_size += size
             pickle.dump((self.total_size, self.cache),
-                    open(self.index_file, 'w'))
+                        open(self.index_file, 'w'))
 
     def __contains__(self, key):
         return key in self.cache
@@ -97,7 +94,7 @@ def flock(lock_path, timeout=300):
     start_time = time.time()
     while True:
         try:
-            fd = os.open(lock_path, os.O_CREAT|os.O_EXCL)
+            fd = os.open(lock_path, os.O_CREAT | os.O_EXCL)
             break
         except OSError:
             if (time.time() - start_time) >= timeout:

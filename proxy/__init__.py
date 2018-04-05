@@ -8,7 +8,7 @@ import tempfile
 
 
 class CachingS3Proxy(object):
-    def __init__(self, capacity=(10*10**9), cache_dir=tempfile.gettempdir()):
+    def __init__(self, capacity=(10 * 10**9), cache_dir=tempfile.gettempdir()):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         if capacity:
@@ -49,7 +49,7 @@ class CachingS3Proxy(object):
 
     def fetch_s3_object(self, bucket, key):
         m = hashlib.md5()
-        m.update(bucket+key)
+        m.update(bucket + key)
         cache_key = m.hexdigest()
 
         try:
