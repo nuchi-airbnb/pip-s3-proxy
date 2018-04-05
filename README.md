@@ -1,27 +1,41 @@
-Caching S3 Proxy 
+Pip S3 Proxy
 ----
 
-Provides an unauthenticated plain HTTP frontend 
-for public and private S3 buckets, and caches on the filesystem.
-Least Recently Used objects are evicted from the cache first.
+Provides an unauthenticated plain HTTP frontend for public and private
+S3 buckets that's intended to be used as a front-end so that pip can
+install packages from S3.
+
+It's based on https://github.com/rhelmer/caching-s3-proxy and supports
+many of the same features.  Thank you rhelmer!
+
+It works by wrapping pip.  You run 'pipsss' instead of 'pip' - pipsss
+starts a web server in the background and then passes your CLI
+parameters to pip.  At the moment you'll definitely want to add an
+extra-index-url to the command line but in the future we might have
+pipsss add that itself.
 
 Example:
 ```
   python setup.py install
-  export AWS_ACCESS_KEY_ID=...
-  export AWS_SECRET_ACCESS_KEY=...
-  caching-s3-proxy &
+  (set up your s3 credentials however you like to do that)
+  pipsss install --extra-index-url http://localhost:8000/my-pypi-bucket my-private-package
+```
+
+You can still use the web server in a standalone mode.  It works like
+caching-s3-proxy.
+
+Example:
+```
+  python setup.py install
+  (set up your s3 credentials however you like to do that)
+  pip-s3-proxy &
   curl localhost:8000/my_bucket/v1/my_file.txt
 ```
 
 If you want to listen on a different port, just set the PORT variable:
 ```
-  PORT=9999 caching-s3-proxy
+  PORT=9999 pip-s3-proxy
 ```
-
-You can also set CAPACITY (in bytes) and CACHEDIR.  If you set
-CAPACITY to 0 the cache will be disabled so every request to
-caching-s3-proxy will cause a request to S3.
 
 Alternatively, you can run under uwsgi. It's safe to use multiple workers
 processes (the shared file cache uses file locking to allow concurrency):
@@ -31,7 +45,7 @@ processes (the shared file cache uses file locking to allow concurrency):
 
 If you want to put this behind Nginx or Apache, use a socket instead:
 ```
-  uwsgi -w proxy.wsgi -s /var/run/caching-s3-proxy.sock --workers=10
+  uwsgi -w proxy.wsgi -s /var/run/pip-s3-proxy.sock --workers=10
 ```
 
 Then see http://uwsgi-docs.readthedocs.org/en/latest/Nginx.html or

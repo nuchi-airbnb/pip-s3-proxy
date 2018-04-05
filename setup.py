@@ -1,19 +1,15 @@
-import codecs
-import glob
-import os
 from setuptools import setup
 
 
 setup(
-    name='caching-s3-proxy',
-    version='0.7',
-    description=('provides an unauthenticated plain HTTP frontend for'
-                 ' public and private S3 buckets, and caches on the'
-                 ' filesystem using an LRU cache'),
-    author='Rob Helmer',
-    author_email='rhelmer@rhelmer.org',
+    name='pip-s3-proxy',
+    version='0.1',
+    description=('provides an unauthenticated plain HTTP proxy'
+                 ' so pip can install packages from S3'),
+    author='Toby Cabot (based on work by Rob Helmer)',
+    author_email='toby@caboteria.org',
     license='MPL',
-    url='https://github.com/rhelmer/caching-s3-proxy',
+    url='https://github.com/caboteria/pip-s3-proxy',
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
@@ -26,10 +22,10 @@ setup(
     install_requires=['boto3>=1.6.22', 'wsgiref>=0.1.2', 'ordereddict>=1.1'],
     entry_points={
         'console_scripts': [
-            'caching-s3-proxy = proxy.run:main',
+            'pip-s3-proxy = proxy.run:main',
             'pipsss = proxy.run:pipsss'
             ],
         },
     test_suite='nose.collector',
     zip_safe=False,
-),
+)
