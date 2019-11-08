@@ -1,8 +1,7 @@
 Pip S3 Proxy
 ----
 
-Provides an unauthenticated plain HTTP frontend for public and private
-S3 buckets that's intended to be used as a front-end so that pip can
+An HTTP frontend for public and private S3 buckets so that pip can
 install packages from S3.
 
 It's based on https://github.com/rhelmer/caching-s3-proxy and supports
@@ -10,9 +9,9 @@ many of the same features.  Thank you rhelmer!
 
 It works by wrapping pip.  You run 'pipsss' instead of 'pip' - pipsss
 starts a web server in the background and then passes your CLI
-parameters to pip.  At the moment you'll definitely want to add an
-extra-index-url to the command line but in the future we might have
-pipsss add that itself.
+parameters to pip.  At the moment you need to add an extra-index-url
+to the command line but in the future we might have pipsss add that
+itself.
 
 Example:
 ```
