@@ -15,11 +15,12 @@ setup(
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: Mozilla Public License 1.1 (MPL 1.1)',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
     packages=['proxy'],
     keywords=['caching', 'lru', 's3', 'proxy', 'unauthenticated'],
-    install_requires=['boto3>=1.6.22', 'ordereddict>=1.1'],
+    install_requires=['boto3>=1.6.22'],
     entry_points={
         'console_scripts': [
             'pip-s3-proxy = proxy.run:main',
