@@ -25,7 +25,7 @@ class CachingS3Proxy(object):
             status = '200 OK'
             response_headers = [('Content-type', 'text/plain')]
             start_response(status, response_headers)
-            return ['Caching S3 Proxy']
+            return ['Caching S3 Proxy'.encode('utf-8')]
 
         path_info = path_info.lstrip('/')
         (bucket, key) = path_info.split('/', 1)
@@ -42,7 +42,7 @@ class CachingS3Proxy(object):
             else:
                 s3_result = self.fetch_s3_object(bucket, key)
         except botocore.exceptions.ClientError as ce:
-            s3_result = [ce.response['Error']['Message']]
+            s3_result = [ce.response['Error']['Message'].encode('utf-8')]
             status = '404 NOT FOUND'
 
         start_response(status, response_headers)
@@ -87,7 +87,7 @@ class CachingS3Proxy(object):
     def serve_index(self, bucket, base_key, listing):
         """Generate an HTML index page from a listing of objects."""
 
-        yield "<html><head><title>Package Index</title></head><body>"
+        yield "<html><head><title>Package Index</title></head><body>".encode('utf-8')
         for object in listing:
-            yield('<a href="/{bucket}/{file}">{file}</a><br/>'.format(bucket=bucket, file=object['Key']))
-        yield "</body></html>"
+            yield('<a href="/{bucket}/{file}">{file}</a><br/>'.format(bucket=bucket, file=object['Key'])).encode('utf-8')
+        yield "</body></html>".encode('utf-8')
