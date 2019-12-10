@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='pip-s3-proxy',
-    version='0.1',
+    version='0.2',
     description=('provides an unauthenticated plain HTTP proxy'
                  ' so pip can install packages from S3'),
     long_description=open('README.md', 'r').read(),
