@@ -6,6 +6,8 @@ setup(
     version='0.1',
     description=('provides an unauthenticated plain HTTP proxy'
                  ' so pip can install packages from S3'),
+    long_description=open('README.md', 'r').read(),
+    long_description_content_type='text/markdown',
     author='Toby Cabot (based on work by Rob Helmer)',
     author_email='toby@caboteria.org',
     license='MPL',
@@ -19,6 +21,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
     packages=['proxy'],
+    include_package_data=True,
     keywords=['caching', 'lru', 's3', 'proxy', 'unauthenticated'],
     install_requires=['boto3>=1.6.22'],
     entry_points={
