@@ -24,6 +24,10 @@ setup(
     include_package_data=True,
     keywords=['caching', 'lru', 's3', 'proxy', 'unauthenticated'],
     install_requires=['boto3>=1.6.22'],
+    extras_require={
+        'dev': ['check-manifest'],
+        'test': ['nose', 'coverage', 'line_profiler', 'flake8'],
+    },
     entry_points={
         'console_scripts': [
             'pip-s3-proxy = proxy.run:main',
