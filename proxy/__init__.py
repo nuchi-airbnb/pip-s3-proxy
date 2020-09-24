@@ -17,6 +17,7 @@ class CachingS3Proxy(object):
         else:
             self.cache = NoOpCache()
         self.s3 = boto3.resource('s3')
+        self.paginator = boto3.client('s3').get_paginator('list_objects_v2')
 
     def proxy_s3_bucket(self, environ, start_response):
         """proxy private s3 buckets"""
@@ -37,7 +38,7 @@ class CachingS3Proxy(object):
             # generate one if the path is a 'directory'
             if key.endswith('/'):
                 listing = self.fetch_directory_listing(bucket, key)
-                s3_result = self.serve_index(bucket, key, listing)
+                s3_result = self.serve_index(key, listing)
                 response_headers = [('Content-type', 'text/html')]
             else:
                 s3_result = self.fetch_s3_object(bucket, key)
@@ -69,25 +70,23 @@ class CachingS3Proxy(object):
         that it's a file system.
 
         """
-        listing = next(iter(boto3.client('s3').get_paginator('list_objects').paginate(Bucket=bucket, Prefix=key)))
+        listing = self.paginator.paginate(Bucket=bucket, Prefix=key, Delimiter='/').build_full_result()
 
-        # since we're asking for a listing, it's valid to have 0
-        # objects in the results, but we want to pretend that it's a
-        # directory that doesn't exist so we raise the same error that
-        # boto raises when you try to fetch a key that doesn't exist
-        if 'Contents' not in listing:
-            raise botocore.exceptions.ClientError({'Error': {'Message': '"Directory" {key} not Found'.format(key=key)}}, 'GET')
+        files = [
+            { 'name': l['Key'][len(key):], 'uri': l['Key'][len(key):] }
+            for l in listing.get('Contents', [])
+        ]
+        subdirectories = [
+            { 'name': l['Prefix'][len(key):-1], 'uri': l['Prefix'][len(key):] }  # Strip trailing slash from name
+            for l in listing.get('CommonPrefixes', [])
+        ]
 
-        # we want to return only the objects that are in this
-        # 'directory' and not any of its 'subdirectories', so screen
-        # out objects in 'subdirectories', i.e., objects with '/' in
-        # the path
-        return [file for file in listing['Contents'] if '/' not in file['Key'][len(key):]]
+        return files + subdirectories
 
-    def serve_index(self, bucket, base_key, listing):
+    def serve_index(self, base_key, listing):
         """Generate an HTML index page from a listing of objects."""
 
         yield "<html><head><title>Package Index</title></head><body>".encode('utf-8')
-        for object in listing:
-            yield('<a href="/{bucket}/{file}">{file}</a><br/>'.format(bucket=bucket, file=object['Key'])).encode('utf-8')
+        for item in listing:
+            yield('<a href="{uri}">{name}</a><br/>'.format(uri=item['uri'], name=item['name'])).encode('utf-8')
         yield "</body></html>".encode('utf-8')
