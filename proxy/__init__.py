@@ -29,6 +29,12 @@ class CachingS3Proxy(object):
             return ['Caching S3 Proxy'.encode('utf-8')]
 
         path_info = path_info.lstrip('/')
+
+        if '/' not in path_info:
+            status = '404 NOT FOUND'
+            start_response(status, [])
+            return ['No bucket specified'.encode('utf-8')]
+
         (bucket, key) = path_info.split('/', 1)
         status = '200 OK'
         response_headers = []
